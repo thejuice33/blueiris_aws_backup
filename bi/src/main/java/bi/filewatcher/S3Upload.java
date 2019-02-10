@@ -12,8 +12,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 public class S3Upload {
+	// Put your unique bucket name here
     String bucketName = "";
+    // Put your access key here
     String accessKey = "";
+    // Put your IAM role secret here
     String secret = "";
     
     public void upload(String fileName, String filePath) {
@@ -26,6 +29,7 @@ public class S3Upload {
 	    	
 	        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
 	                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+	                // Adjust region if necessary
 	                .withRegion(Regions.US_EAST_1)
 	                .build();
 	    

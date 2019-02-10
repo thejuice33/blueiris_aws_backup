@@ -90,6 +90,12 @@ public class Main {
         }
     }
 	
+	/**
+	 * Checks if the file is finished being written.
+	 * 
+	 * @param file
+	 * @return
+	 */
 	private static boolean isFileWritten(File file) {
 		RandomAccessFile raf = null;
         try {
@@ -109,6 +115,14 @@ public class Main {
         return false;
 	}
 	
+	/**
+	 * Uploads to AWS S3.
+	 * 
+	 * @param lockFile
+	 * @param event
+	 * @param fileLocation
+	 * @throws Exception
+	 */
 	private static void uploadFile(File lockFile, WatchEvent<?> event, String fileLocation) throws Exception{
 		S3Upload s3Upload = new S3Upload();
 		
@@ -119,6 +133,12 @@ public class Main {
         s3Upload.upload(event.context().toString(), fileLocation);
 	}
 	
+	/**
+	 * Creates a cache record of this file being uploaded.  Blue Iris seems to finish writing to a file and 
+	 * subsequently updates it a short period after.  This prevents duplicate file uploads when a file update
+	 * re-triggers the Windows file watcher event.
+	 * @param fileName
+	 */
 	private static void createCacheRecord(String fileName) {
 		List<String> lines = Arrays.asList("The first line", "The second line");
 		Path file = Paths.get(CACHE_DIR + fileName);
@@ -129,12 +149,25 @@ public class Main {
 		}		
 	}
 	
+	/**
+	 * Determines from cache if file has already been uploaded.
+	 * 
+	 * @param fileName
+	 * @return
+	 */
 	private static boolean fileAlreadyUploaded(String fileName) {
 		File tempFile = new File(CACHE_DIR + fileName);
 		
 		return tempFile.exists();
 	}
 	
+	/**
+	 * A quick hack to prevent 24x7 recorded video streams from being uploaded.  Just add "24by7" into the file name
+	 * of any camera that records continuously.  Better ways to do this...just a quick fix.
+	 * 
+	 * @param fileName
+	 * @return
+	 */
 	private static boolean file247(String fileName) {		
 		boolean twentyfourx7 = fileName.contains("24by7");
 		return twentyfourx7;
